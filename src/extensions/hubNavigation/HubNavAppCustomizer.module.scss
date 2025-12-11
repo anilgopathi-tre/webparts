@@ -1,0 +1,46 @@
+@import '~@microsoft/sp-office-ui-fabric-core/dist/sass/SPFabricCore.scss';
+
+.app {
+  .top {
+      height:60px;
+      text-align:center;
+      line-height:2.5;
+      font-weight:bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: $ms-color-themePrimary;
+      color: $ms-color-white;
+
+  }
+
+  .bottom {
+      height:40px;
+      text-align:center;
+      line-height:2.5;
+      font-weight:bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: $ms-color-themePrimary;
+      color: $ms-color-white;
+  }
+}
+
+
+.ms-HubNav,
+.ms-HubNav * {
+  display: none !important;
+}
+
+/* Optional: remove empty space that sometimes remains in the composite header */
+div[class*="CompositeHeader"] div[class*="HubNav"] {
+  display: none !important;
+}
+
+.m365-current-hub-link {
+  font-weight: 600;         /* make it bold */
+  text-decoration: underline;
+  /* Optional brand color background for extra emphasis */
+  /* background: #FFE08A; border-radius: 4px; padding: 2px 4px; */
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "hub-navigation-application-customizer": {
+      "components": [
+        {
+          "entrypoint": "./lib/extensions/hubNavigation/HubNavigationApplicationCustomizer.js",
+          "manifest": "./src/extensions/hubNavigation/HubNavigationApplicationCustomizer.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "HubNavigationApplicationCustomizerStrings": "lib/extensions/hubNavigation/loc/{locale}.js"
+  }
+}

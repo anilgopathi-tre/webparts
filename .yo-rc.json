@@ -1,0 +1,19 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "22.21.1",
+    "sdksVersions": {},
+    "version": "1.21.1",
+    "libraryName": "tre-global-navigation",
+    "libraryId": "b053016b-0708-44bb-8bf9-37561fb4751e",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "tre-global-navigation",
+    "solutionShortDescription": "tre-global-navigation description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "extension",
+    "extensionType": "ApplicationCustomizer"
+  }
+}
