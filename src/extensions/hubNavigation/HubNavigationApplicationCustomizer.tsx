@@ -1,3 +1,130 @@
+import { Log } from '@microsoft/sp-core-library';
+import { BaseApplicationCustomizer } from '@microsoft/sp-application-base';
+
+const LOG_SOURCE: string = 'HubNavigationApplicationCustomizer';
+
+export interface IHubNavigationApplicationCustomizerProperties {
+  hubSiteUrl?: string;
+}
+
+/** Application Customizer to highlight current site in hub navigation */
+export default class HubNavigationApplicationCustomizer
+  extends BaseApplicationCustomizer<IHubNavigationApplicationCustomizerProperties> {
+
+  private _styleElement: HTMLStyleElement | null = null;
+
+  public async onInit(): Promise<void> {
+    Log.info(LOG_SOURCE, `Initialized HubNavigationApplicationCustomizer`);
+    
+    // Inject base CSS styles
+    this._injectStyles();
+    
+    // Apply highlighting after page loads
+    this._applyHighlighting();
+    
+    // Re-apply on navigation events
+    this.context.application.navigatedEvent.add(this, () => {
+      setTimeout(() => this._applyHighlighting(), 500);
+    });
+    
+    // Also watch for DOM changes (mega menu opens)
+    this._observeDOM();
+    
+    return Promise.resolve();
+  }
+
+  private _injectStyles(): void {
+    if (this._styleElement) return;
+    
+    this._styleElement = document.createElement('style');
+    this._styleElement.setAttribute('data-hub-nav-customizer', 'true');
+    this._styleElement.innerHTML = `
+      /* Current site link - BOLD RED */
+      .hub-nav-current-site,
+      .hub-nav-current-site span,
+      .hub-nav-current-site button,
+      a.hub-nav-current-site {
+        color: #d32f2f !important;
+        font-weight: 700 !important;
+      }
+      
+      /* Other links - NORMAL GREEN */
+      .hub-nav-other-site,
+      .hub-nav-other-site span,
+      .hub-nav-other-site button,
+      a.hub-nav-other-site {
+        color: #2e7d32 !important;
+        font-weight: 400 !important;
+      }
+    `;
+    document.head.appendChild(this._styleElement);
+  }
+
+  private _applyHighlighting(): void {
+    const currentSiteUrl = this.context.pageContext.web.absoluteUrl.replace(/\/$/, '').toLowerCase();
+    const currentSiteName = currentSiteUrl.split('/sites/')[1]?.split('/')[0] || '';
+    
+    console.log('Hub Nav Customizer - Current site:', currentSiteName, currentSiteUrl);
+    
+    // Find all links in hub navigation areas
+    const selectors = [
+      '[class*="hubNav"] a',
+      '[class*="HubNav"] a', 
+      '[data-automationid="HubNav"] a',
+      '[class*="megaMenu"] a',
+      '[class*="MegaMenu"] a',
+      '[class*="topNav"] a',
+      '[class*="TopNav"] a',
+      'nav a[href*="/sites/"]',
+      '[role="navigation"] a[href*="/sites/"]',
+      '[class*="root"] > [class*="link"]',
+      'button[class*="hubNav"]',
+      '[class*="CompositeHeader"] a'
+    ];
+    
+    const allLinks = document.querySelectorAll(selectors.join(', '));
+    
+    console.log('Hub Nav Customizer - Found links:', allLinks.length);
+    
+    allLinks.forEach((link: Element) => {
+      const href = link.getAttribute('href') || '';
+      const linkUrl = href.toLowerCase();
+      const linkSiteName = linkUrl.split('/sites/')[1]?.split('/')[0] || '';
+      
+      // Remove existing classes
+      link.classList.remove('hub-nav-current-site', 'hub-nav-other-site');
+      
+      // Check if this link matches current site
+      const isCurrentSite = linkSiteName && currentSiteName && 
+        linkSiteName === currentSiteName;
+      
+      if (isCurrentSite) {
+        link.classList.add('hub-nav-current-site');
+        console.log('Hub Nav Customizer - Marked as current:', href);
+      } else if (linkUrl.indexOf('/sites/') > -1) {
+        link.classList.add('hub-nav-other-site');
+      }
+    });
+  }
+
+  private _observeDOM(): void {
+    // Watch for mega menu dropdown to appear
+    const observer = new MutationObserver(() => {
+      this._applyHighlighting();
+    });
+    
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  }
+}
+
+
+
+
+
+/*
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { getTopNav } from './helpers/NavApi';
@@ -18,7 +145,7 @@ export interface IHubNavigationApplicationCustomizerProperties {
 }
 
 /** A Custom Action which can be run during execution of a Client Side Application */
-export default class HubNavigationApplicationCustomizer
+/* export default class HubNavigationApplicationCustomizer
   extends BaseApplicationCustomizer<IHubNavigationApplicationCustomizerProperties> {
 
     //private topPlaceholder;
